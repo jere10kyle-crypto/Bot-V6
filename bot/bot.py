@@ -31,8 +31,14 @@ def save_json(filename, data):
 # ── Shared state (also written to JSON so dashboard can read) ─────────────────
 strikes     = load_json("strikes.json", {})       # {user_id: count}
 logs        = load_json("logs.json", [])           # list of log entries
-banned_words= load_json("banned_words.json",       # list of strings
-    ["spam", "badword1", "badword2", "hate", "slur"])
+
+# banned_words: {word: tier_int} — migrate old list format automatically
+_raw_words = load_json("banned_words.json", {})
+if isinstance(_raw_words, list):
+    banned_words = {w: 1 for w in _raw_words}
+    save_json("banned_words.json", banned_words)
+else:
+    banned_words = _raw_words  # {word: tier}
 
 # Anti-raid / spam tracking (in-memory only)
 message_times      = defaultdict(list)   # {user_id: [timestamps]}
@@ -121,23 +127,33 @@ async def check_spam(message):
 
 async def check_banned_words(message):
     content = message.content.lower()
-    for word in banned_words:
+    for word, tier in banned_words.items():
         if word.lower() in content:
             uid = str(message.author.id)
             word_warning_count[uid] += 1
             if word_warning_count[uid] >= 2:
                 await message.delete()
+                s = get_settings()
+                mins = min(s[f"tier{tier}_minutes"], 40320)
                 await message.channel.send(
-                    f"🚫 {message.author.mention} final warning — message deleted for using a banned word.",
+                    f"🚫 {message.author.mention} message deleted — Tier {tier} word not allowed here.",
                     delete_after=5,
                 )
-                count = await add_strike(message.guild, message.author, f"Banned word (2nd offence): {word}")
+                try:
+                    await message.author.timeout(timedelta(minutes=mins),
+                        reason=f"Tier {tier} banned word: {word} ({mins}m)")
+                    add_log(f"MUTE_T{tier}", message.author, f"Tier {tier} word: '{word}' ({mins}m)")
+                except discord.Forbidden:
+                    pass
+                strikes[uid] = strikes.get(uid, 0) + 1
+                save_json("strikes.json", strikes)
+                add_log("STRIKE", message.author, f"Tier {tier} banned word: '{word}'")
             else:
                 await message.channel.send(
-                    f"⚠️ {message.author.mention} that word is not allowed here. Next time your message will be deleted.",
+                    f"⚠️ {message.author.mention} that word is not allowed (Tier {tier} — severity {'low' if tier <= 2 else 'medium' if tier <= 3 else 'high'}). Next time your message will be deleted.",
                     delete_after=8,
                 )
-                add_log("WARN", message.author, f"Banned word warning: {word}")
+                add_log("WARN", message.author, f"Tier {tier} banned word warning: '{word}'")
             return True
     return False
 
@@ -208,20 +224,21 @@ async def reset_strikes(interaction: discord.Interaction, member: discord.Member
     )
 
 @bot.tree.command(name="addword", description="Add a banned word")
+@app_commands.describe(word="The word to ban", tier="Severity tier 1–5 (default 1)")
 @app_commands.checks.has_permissions(administrator=True)
-async def add_word(interaction: discord.Interaction, word: str):
+async def add_word(interaction: discord.Interaction, word: str, tier: int = 1):
     w = word.lower().strip()
-    if w not in banned_words:
-        banned_words.append(w)
-        save_json("banned_words.json", banned_words)
-    await interaction.response.send_message(f"✅ `{w}` added to banned words.", ephemeral=True)
+    t = max(1, min(5, tier))
+    banned_words[w] = t
+    save_json("banned_words.json", banned_words)
+    await interaction.response.send_message(f"✅ `{w}` added as Tier {t} banned word.", ephemeral=True)
 
 @bot.tree.command(name="removeword", description="Remove a banned word")
 @app_commands.checks.has_permissions(administrator=True)
 async def remove_word(interaction: discord.Interaction, word: str):
     w = word.lower().strip()
     if w in banned_words:
-        banned_words.remove(w)
+        banned_words.pop(w)
         save_json("banned_words.json", banned_words)
         await interaction.response.send_message(f"✅ `{w}` removed.", ephemeral=True)
     else:
@@ -265,7 +282,7 @@ class PanelView(discord.ui.View):
 
     @discord.ui.button(label="📝 Banned Words", style=discord.ButtonStyle.secondary)
     async def list_words(self, interaction: discord.Interaction, button: discord.ui.Button):
-        words = ", ".join(f"`{w}`" for w in banned_words) if banned_words else "None"
+        words = ", ".join(f"`{w}`(T{t})" for w, t in banned_words.items()) if banned_words else "None"
         await interaction.response.send_message(f"🚫 Banned: {words}", ephemeral=True)
 
 # ── Run ───────────────────────────────────────────────────────────────────────

@@ -35,7 +35,8 @@ def save(f, data):
 def index():
     strikes     = load("strikes.json", {})
     logs        = load("logs.json", [])
-    banned_words= load("banned_words.json", [])
+    _bw         = load("banned_words.json", {})
+    banned_words = {w: t for w, t in _bw.items()} if isinstance(_bw, dict) else {w: 1 for w in _bw}
 
     top_users = sorted(strikes.items(), key=lambda x: x[1], reverse=True)[:10]
 
@@ -67,19 +68,22 @@ def index():
 @app.route("/add_word", methods=["POST"])
 def add_word():
     word = request.form.get("word", "").lower().strip()
+    tier = max(1, min(5, int(request.form.get("tier", 1))))
     if word:
-        words = load("banned_words.json", [])
-        if word not in words:
-            words.append(word)
-            save("banned_words.json", words)
+        words = load("banned_words.json", {})
+        if isinstance(words, list):
+            words = {w: 1 for w in words}
+        words[word] = tier
+        save("banned_words.json", words)
     return redirect(url_for("index"))
 
 @app.route("/remove_word/<word>")
 def remove_word(word):
-    words = load("banned_words.json", [])
-    if word in words:
-        words.remove(word)
-        save("banned_words.json", words)
+    words = load("banned_words.json", {})
+    if isinstance(words, list):
+        words = {w: 1 for w in words}
+    words.pop(word, None)
+    save("banned_words.json", words)
     return redirect(url_for("index"))
 
 @app.route("/reset_strikes/<uid>")

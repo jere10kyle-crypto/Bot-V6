@@ -414,14 +414,25 @@
     <div class="card">
       <form class="form-row" action="/add_word" method="POST">
         <input class="form-input" type="text" name="word" placeholder="Add a word..." required />
+        <select name="tier" class="form-input" style="flex:0 0 auto;width:110px;">
+          <option value="1">Tier 1</option>
+          <option value="2">Tier 2</option>
+          <option value="3">Tier 3</option>
+          <option value="4">Tier 4</option>
+          <option value="5">Tier 5</option>
+        </select>
         <button class="btn btn-primary" type="submit">Add</button>
       </form>
       <div class="word-chips">
         {% if banned_words %}
-          {% for word in banned_words %}
-          <div class="word-chip">
-            {{ word }}
-            <a href="/remove_word/{{ word }}" title="Remove">✕</a>
+          {% set tier_chip_colors = ["","tag-blue","tag-yellow","tag-red","tag-pink","tag-red"] %}
+          {% set tier_dot_colors  = ["","var(--accent)","var(--yellow)","#ff8c42","var(--accent2)","var(--red)"] %}
+          {% for word, tier in banned_words.items() %}
+          <div class="word-chip" style="border-color:{{ tier_dot_colors[tier] }}33;background:{{ tier_dot_colors[tier] }}14;">
+            <span style="width:6px;height:6px;border-radius:50%;background:{{ tier_dot_colors[tier] }};display:inline-block;flex-shrink:0;"></span>
+            <span style="color:{{ tier_dot_colors[tier] }};font-size:0.65rem;font-weight:700;">T{{ tier }}</span>
+            <span style="color:var(--text);">{{ word }}</span>
+            <a href="/remove_word/{{ word }}" title="Remove" style="color:var(--muted);">✕</a>
           </div>
           {% endfor %}
         {% else %}
