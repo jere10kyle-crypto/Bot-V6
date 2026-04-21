@@ -1,0 +1,7 @@
+{
+  "tier1_strikes": 1,
+  "tier1_minutes": 1,
+  "tier2_strikes": 3,
+  "tier2_minutes": 10,
+  "tier3_strikes": 5
+}

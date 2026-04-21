@@ -292,6 +292,11 @@
     .act-RESET_STRIKES { color: var(--accent); }
     .act-MUTE       { color: var(--accent2); }
     .act-WARN       { color: var(--yellow); }
+    .act-MUTE_T1    { color: var(--accent); }
+    .act-MUTE_T2    { color: var(--yellow); }
+    .act-MUTE_T3    { color: #ff8c42; }
+    .act-MUTE_T4    { color: var(--accent2); }
+    .act-MUTE_T5    { color: var(--red); }
   </style>
 </head>
 <body>
@@ -454,48 +459,33 @@
     <div class="section-title">⚙️ Mute Settings</div>
     <div class="card">
       <form action="/save_settings" method="POST">
-        <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div style="display:flex;flex-direction:column;gap:0;">
 
-          <div>
-            <div class="card-title" style="margin-bottom:0.6rem;">Tier 1 — Short Mute</div>
+          {% set tier_labels = ["First offence", "Second offence", "Third offence", "Fourth offence", "Fifth offence"] %}
+          {% set tier_colors = ["var(--accent)", "var(--yellow)", "#ff8c42", "var(--accent2)", "var(--red)"] %}
+
+          {% for t in range(1, 6) %}
+          <div style="{% if not loop.first %}border-top:1px solid var(--border);{% endif %}padding:1rem 0;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+              <span style="width:10px;height:10px;border-radius:50%;background:{{ tier_colors[loop.index0] }};display:inline-block;flex-shrink:0;"></span>
+              <span class="card-title">Tier {{ t }} — {{ tier_labels[loop.index0] }}</span>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
               <div>
                 <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Strikes to trigger</label>
-                <input class="form-input" type="number" name="tier1_strikes" min="1" value="{{ settings.tier1_strikes }}" />
+                <input class="form-input" type="number" name="tier{{ t }}_strikes" min="1" value="{{ settings['tier' ~ t ~ '_strikes'] }}" />
               </div>
               <div>
                 <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Mute duration (minutes)</label>
-                <input class="form-input" type="number" name="tier1_minutes" min="1" value="{{ settings.tier1_minutes }}" />
+                <input class="form-input" type="number" name="tier{{ t }}_minutes" min="1" value="{{ settings['tier' ~ t ~ '_minutes'] }}" />
               </div>
             </div>
-          </div>
-
-          <div style="border-top:1px solid var(--border);padding-top:1rem;">
-            <div class="card-title" style="margin-bottom:0.6rem;">Tier 2 — Long Mute</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-              <div>
-                <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Strikes to trigger</label>
-                <input class="form-input" type="number" name="tier2_strikes" min="1" value="{{ settings.tier2_strikes }}" />
-              </div>
-              <div>
-                <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Mute duration (minutes)</label>
-                <input class="form-input" type="number" name="tier2_minutes" min="1" value="{{ settings.tier2_minutes }}" />
-              </div>
+            <div style="font-size:0.7rem;color:var(--muted);margin-top:0.4rem;font-family:var(--mono);">
+              = {{ (settings['tier' ~ t ~ '_minutes'] // 60) }}h {{ (settings['tier' ~ t ~ '_minutes'] % 60) }}m mute
+              {% if settings['tier' ~ t ~ '_minutes'] >= 40320 %} (permanent — max Discord allows){% endif %}
             </div>
           </div>
-
-          <div style="border-top:1px solid var(--border);padding-top:1rem;">
-            <div class="card-title" style="margin-bottom:0.6rem;">Tier 3 — Permanent Mute</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-              <div>
-                <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Strikes to trigger</label>
-                <input class="form-input" type="number" name="tier3_strikes" min="1" value="{{ settings.tier3_strikes }}" />
-              </div>
-              <div style="display:flex;align-items:flex-end;">
-                <span style="font-size:0.8rem;color:var(--red);font-family:var(--mono);padding-bottom:0.55rem;">28 days (max Discord allows)</span>
-              </div>
-            </div>
-          </div>
+          {% endfor %}
 
           <div style="border-top:1px solid var(--border);padding-top:1rem;">
             <button class="btn btn-primary" type="submit">Save Settings</button>

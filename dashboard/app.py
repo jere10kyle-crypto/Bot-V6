@@ -7,11 +7,11 @@ app = Flask(__name__)
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
 DEFAULT_SETTINGS = {
-    "tier1_strikes": 1,
-    "tier1_minutes": 15,
-    "tier2_strikes": 3,
-    "tier2_minutes": 1440,
-    "tier3_strikes": 5,
+    "tier1_strikes": 1,  "tier1_minutes": 5,
+    "tier2_strikes": 2,  "tier2_minutes": 15,
+    "tier3_strikes": 3,  "tier3_minutes": 60,
+    "tier4_strikes": 4,  "tier4_minutes": 1440,
+    "tier5_strikes": 5,  "tier5_minutes": 40320,
 }
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ def index():
     # Strikes distribution for bar chart
     distribution = Counter(strikes.values())
 
-    settings = load("settings.json", DEFAULT_SETTINGS.copy())
+    settings = {**DEFAULT_SETTINGS, **load("settings.json", {})}
 
     return render_template(
         "index.html",
@@ -103,13 +103,11 @@ def api_stats():
 
 @app.route("/save_settings", methods=["POST"])
 def save_settings():
-    s = load("settings.json", DEFAULT_SETTINGS.copy())
+    s = {**DEFAULT_SETTINGS, **load("settings.json", {})}
     try:
-        s["tier1_strikes"] = max(1, int(request.form.get("tier1_strikes", 1)))
-        s["tier1_minutes"] = max(1, int(request.form.get("tier1_minutes", 15)))
-        s["tier2_strikes"] = max(1, int(request.form.get("tier2_strikes", 3)))
-        s["tier2_minutes"] = max(1, int(request.form.get("tier2_minutes", 1440)))
-        s["tier3_strikes"] = max(1, int(request.form.get("tier3_strikes", 5)))
+        for t in range(1, 6):
+            s[f"tier{t}_strikes"] = max(1, int(request.form.get(f"tier{t}_strikes", DEFAULT_SETTINGS[f"tier{t}_strikes"])))
+            s[f"tier{t}_minutes"] = max(1, int(request.form.get(f"tier{t}_minutes", DEFAULT_SETTINGS[f"tier{t}_minutes"])))
     except ValueError:
         pass
     save("settings.json", s)

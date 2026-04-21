@@ -61,15 +61,17 @@ def add_log(action, user, reason, moderator="AutoMod"):
     save_json("logs.json", logs)
 
 DEFAULT_SETTINGS = {
-    "tier1_strikes": 1,
-    "tier1_minutes": 15,
-    "tier2_strikes": 3,
-    "tier2_minutes": 1440,
-    "tier3_strikes": 5,
+    "tier1_strikes": 1,  "tier1_minutes": 5,
+    "tier2_strikes": 2,  "tier2_minutes": 15,
+    "tier3_strikes": 3,  "tier3_minutes": 60,
+    "tier4_strikes": 4,  "tier4_minutes": 1440,
+    "tier5_strikes": 5,  "tier5_minutes": 40320,
 }
 
+TIERS = [5, 4, 3, 2, 1]
+
 def get_settings():
-    return load_json("settings.json", DEFAULT_SETTINGS)
+    return {**DEFAULT_SETTINGS, **load_json("settings.json", {})}
 
 # ── Strike helper ─────────────────────────────────────────────────────────────
 async def add_strike(guild, member, reason):
@@ -81,26 +83,16 @@ async def add_strike(guild, member, reason):
     count = strikes[uid]
     s = get_settings()
 
-    if count >= s["tier3_strikes"]:
-        try:
-            await member.timeout(timedelta(days=28), reason=f"{s['tier3_strikes']} strikes – permanent mute")
-            add_log("PERM_MUTE", member, f"Reached {s['tier3_strikes']} strikes")
-        except discord.Forbidden:
-            pass
-    elif count >= s["tier2_strikes"]:
-        mins = s["tier2_minutes"]
-        try:
-            await member.timeout(timedelta(minutes=mins), reason=f"{s['tier2_strikes']} strikes – {mins}m mute")
-            add_log("MUTE_24H", member, f"Reached {s['tier2_strikes']} strikes ({mins}m)")
-        except discord.Forbidden:
-            pass
-    elif count >= s["tier1_strikes"]:
-        mins = s["tier1_minutes"]
-        try:
-            await member.timeout(timedelta(minutes=mins), reason=f"Strike {count} – {mins}m mute")
-            add_log("MUTE_15M", member, f"Strike {count} ({mins}m)")
-        except discord.Forbidden:
-            pass
+    for t in TIERS:
+        if count >= s[f"tier{t}_strikes"]:
+            mins = min(s[f"tier{t}_minutes"], 40320)   # cap at 28 days
+            try:
+                await member.timeout(timedelta(minutes=mins),
+                    reason=f"Tier {t} – {count} strike(s) – {mins}m mute")
+                add_log(f"MUTE_T{t}", member, f"Tier {t} triggered at {count} strike(s) ({mins}m)")
+            except discord.Forbidden:
+                pass
+            break
 
     return count
 
