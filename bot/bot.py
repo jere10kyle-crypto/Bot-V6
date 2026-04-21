@@ -174,29 +174,29 @@ async def check_banned_words(message):
         if word.lower() in content:
             uid = str(message.author.id)
             word_warning_count[uid] += 1
+            # Always delete the message on any offense
+            await message.delete()
+            strikes[uid] = strikes.get(uid, 0) + 1
+            save_json("strikes.json", strikes)
+            add_log("STRIKE", message.author, f"Tier {tier} banned word: '{word}'")
             if word_warning_count[uid] >= 2:
-                await message.delete()
                 s = get_settings()
                 mins = min(s[f"tier{tier}_minutes"], 40320)
                 await message.channel.send(
-                    f"🚫 {message.author.mention} message deleted — Tier {tier} word not allowed here.",
+                    f"🚫 {message.author.mention} message deleted — Tier {tier} violation. Mute applied.",
                     delete_after=5,
                 )
                 try:
                     await message.author.timeout(timedelta(minutes=mins),
-                        reason=f"Tier {tier} banned word: {word} ({mins}m)")
+                        reason=f"Tier {tier} banned word: '{word}' ({mins}m)")
                     add_log(f"MUTE_T{tier}", message.author, f"Tier {tier} word: '{word}' ({mins}m)")
                 except discord.Forbidden:
                     pass
-                strikes[uid] = strikes.get(uid, 0) + 1
-                save_json("strikes.json", strikes)
-                add_log("STRIKE", message.author, f"Tier {tier} banned word: '{word}'")
             else:
                 await message.channel.send(
-                    f"⚠️ {message.author.mention} that word is not allowed (Tier {tier} — severity {'low' if tier <= 2 else 'medium' if tier <= 3 else 'high'}). Next time your message will be deleted.",
+                    f"⚠️ {message.author.mention} message deleted — Tier {tier} word not allowed. One more and you'll be muted.",
                     delete_after=8,
                 )
-                add_log("WARN", message.author, f"Tier {tier} banned word warning: '{word}'")
             return True
     return False
 

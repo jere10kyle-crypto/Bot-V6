@@ -6,10 +6,10 @@
   "tier3_strikes": 3,
   "tier3_minutes": 5,
   "tier4_strikes": 4,
-  "tier4_minutes": 9,
+  "tier4_minutes": 10,
   "tier5_strikes": 5,
   "tier5_minutes": 20,
-  "spam_word_limit": 2,
-  "spam_word_window": 10,
-  "spam_word_tier": 5
+  "spam_word_limit": 3,
+  "spam_word_window": 1,
+  "spam_word_tier": 1
 }
