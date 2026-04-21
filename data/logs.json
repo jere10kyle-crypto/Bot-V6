@@ -1,0 +1,16 @@
+[
+  {
+    "timestamp": "2026-04-21T00:20:54.342337",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Banned word: gay",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T00:21:01.736301",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Spam detection",
+    "moderator": "AutoMod"
+  }
+]

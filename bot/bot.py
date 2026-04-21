@@ -35,8 +35,9 @@ banned_words= load_json("banned_words.json",       # list of strings
     ["spam", "badword1", "badword2", "hate", "slur"])
 
 # Anti-raid / spam tracking (in-memory only)
-message_times   = defaultdict(list)   # {user_id: [timestamps]}
-warned_users    = set()               # users already warned this burst
+message_times      = defaultdict(list)   # {user_id: [timestamps]}
+warned_users       = set()               # users already warned this burst
+word_warning_count = defaultdict(int)    # {user_id: count of banned word uses}
 
 # ── Bot setup ─────────────────────────────────────────────────────────────────
 intents = discord.Intents.default()
@@ -116,12 +117,21 @@ async def check_banned_words(message):
     content = message.content.lower()
     for word in banned_words:
         if word.lower() in content:
-            await message.delete()
-            await message.channel.send(
-                f"🚫 {message.author.mention} that word is not allowed here.",
-                delete_after=5,
-            )
-            count = await add_strike(message.guild, message.author, f"Banned word: {word}")
+            uid = str(message.author.id)
+            word_warning_count[uid] += 1
+            if word_warning_count[uid] >= 2:
+                await message.delete()
+                await message.channel.send(
+                    f"🚫 {message.author.mention} final warning — message deleted for using a banned word.",
+                    delete_after=5,
+                )
+                count = await add_strike(message.guild, message.author, f"Banned word (2nd offence): {word}")
+            else:
+                await message.channel.send(
+                    f"⚠️ {message.author.mention} that word is not allowed here. Next time your message will be deleted.",
+                    delete_after=8,
+                )
+                add_log("WARN", message.author, f"Banned word warning: {word}")
             return True
     return False
 
