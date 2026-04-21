@@ -12,6 +12,9 @@ DEFAULT_SETTINGS = {
     "tier3_strikes": 3,  "tier3_minutes": 60,
     "tier4_strikes": 4,  "tier4_minutes": 1440,
     "tier5_strikes": 5,  "tier5_minutes": 40320,
+    "spam_word_limit":  5,
+    "spam_word_window": 10,
+    "spam_word_tier":   2,
 }
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -112,6 +115,9 @@ def save_settings():
         for t in range(1, 6):
             s[f"tier{t}_strikes"] = max(1, int(request.form.get(f"tier{t}_strikes", DEFAULT_SETTINGS[f"tier{t}_strikes"])))
             s[f"tier{t}_minutes"] = max(1, int(request.form.get(f"tier{t}_minutes", DEFAULT_SETTINGS[f"tier{t}_minutes"])))
+        s["spam_word_limit"]  = max(2, int(request.form.get("spam_word_limit",  DEFAULT_SETTINGS["spam_word_limit"])))
+        s["spam_word_window"] = max(1, int(request.form.get("spam_word_window", DEFAULT_SETTINGS["spam_word_window"])))
+        s["spam_word_tier"]   = max(1, min(5, int(request.form.get("spam_word_tier", DEFAULT_SETTINGS["spam_word_tier"]))))
     except ValueError:
         pass
     save("settings.json", s)

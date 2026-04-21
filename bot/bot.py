@@ -41,9 +41,10 @@ else:
     banned_words = _raw_words  # {word: tier}
 
 # Anti-raid / spam tracking (in-memory only)
-message_times      = defaultdict(list)   # {user_id: [timestamps]}
-warned_users       = set()               # users already warned this burst
-word_warning_count = defaultdict(int)    # {user_id: count of banned word uses}
+message_times      = defaultdict(list)                        # {user_id: [timestamps]}
+warned_users       = set()                                    # users already warned this burst
+word_warning_count = defaultdict(int)                         # {user_id: count of banned word uses}
+word_repeat_times  = defaultdict(lambda: defaultdict(list))   # {user_id: {word: [timestamps]}}
 
 # ── Bot setup ─────────────────────────────────────────────────────────────────
 intents = discord.Intents.default()
@@ -72,6 +73,10 @@ DEFAULT_SETTINGS = {
     "tier3_strikes": 3,  "tier3_minutes": 60,
     "tier4_strikes": 4,  "tier4_minutes": 1440,
     "tier5_strikes": 5,  "tier5_minutes": 40320,
+    # Word-repeat spam
+    "spam_word_limit":  5,   # times the same word in the window triggers action
+    "spam_word_window": 10,  # seconds
+    "spam_word_tier":   2,   # which tier mute to apply
 }
 
 TIERS = [5, 4, 3, 2, 1]
@@ -122,6 +127,44 @@ async def check_spam(message):
                 delete_after=5,
             )
             count = await add_strike(message.guild, message.author, "Spam detection")
+            return True
+    return False
+
+async def check_word_spam(message):
+    s = get_settings()
+    limit  = s["spam_word_limit"]
+    window = s["spam_word_window"]
+    tier   = max(1, min(5, s["spam_word_tier"]))
+    uid    = str(message.author.id)
+    now    = time.time()
+
+    for word in message.content.lower().split():
+        if len(word) < 2:
+            continue
+        times = word_repeat_times[uid][word]
+        times = [t for t in times if now - t < window]
+        times.append(now)
+        word_repeat_times[uid][word] = times
+
+        if len(times) >= limit:
+            word_repeat_times[uid][word] = []   # reset after trigger
+            await message.delete()
+            s2 = get_settings()
+            mins = min(s2[f"tier{tier}_minutes"], 40320)
+            await message.channel.send(
+                f"🔁 {message.author.mention} stop repeating the same word — Tier {tier} spam mute applied.",
+                delete_after=6,
+            )
+            try:
+                await message.author.timeout(timedelta(minutes=mins),
+                    reason=f"Word-repeat spam: '{word}' x{limit} in {window}s (Tier {tier})")
+                add_log(f"MUTE_T{tier}", message.author,
+                    f"Word-repeat spam: '{word}' x{limit} in {window}s ({mins}m)")
+            except discord.Forbidden:
+                pass
+            strikes[uid] = strikes.get(uid, 0) + 1
+            save_json("strikes.json", strikes)
+            add_log("STRIKE", message.author, f"Word-repeat spam: '{word}'")
             return True
     return False
 
@@ -176,7 +219,11 @@ async def on_message(message):
     if await check_banned_words(message):
         return
 
-    # Spam check
+    # Word-repeat spam check
+    if await check_word_spam(message):
+        return
+
+    # General spam check
     if await check_spam(message):
         return
 

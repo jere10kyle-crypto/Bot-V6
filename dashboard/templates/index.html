@@ -309,6 +309,7 @@
   <a class="nav-item" href="#words"><span class="icon">🚫</span> Banned Words</a>
   <a class="nav-item" href="#logs"><span class="icon">📋</span> Logs</a>
   <a class="nav-item" href="#settings"><span class="icon">⚙️</span> Settings</a>
+  <a class="nav-item" href="#spam-settings"><span class="icon">🔁</span> Word Spam</a>
 </nav>
 
 <!-- Main -->
@@ -329,19 +330,19 @@
   <div class="stat-grid">
     <div class="stat-card blue">
       <div class="stat-label">Total Strikes</div>
-      <div class="stat-value" style="color:var(--accent)">{{ total_strikes }}</div>
+      <div class="stat-value" id="stat-strikes" style="color:var(--accent)">{{ total_strikes }}</div>
     </div>
     <div class="stat-card red">
       <div class="stat-label">Users Striked</div>
-      <div class="stat-value" style="color:var(--red)">{{ strikes|length }}</div>
+      <div class="stat-value" id="stat-users" style="color:var(--red)">{{ strikes|length }}</div>
     </div>
     <div class="stat-card pink">
       <div class="stat-label">Log Entries</div>
-      <div class="stat-value" style="color:var(--accent2)">{{ total_logs }}</div>
+      <div class="stat-value" id="stat-logs" style="color:var(--accent2)">{{ total_logs }}</div>
     </div>
     <div class="stat-card green">
       <div class="stat-label">Banned Words</div>
-      <div class="stat-value" style="color:var(--green)">{{ total_words }}</div>
+      <div class="stat-value" id="stat-words" style="color:var(--green)">{{ total_words }}</div>
     </div>
   </div>
 
@@ -506,6 +507,44 @@
     </div>
   </div>
 
+  <!-- Word-repeat spam settings -->
+  <div class="section" id="spam-settings">
+    <div class="section-title">🔁 Word-Repeat Spam</div>
+    <div class="card">
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.75rem;">
+        Triggers when the same word is sent <strong style="color:var(--text);">X times</strong> within <strong style="color:var(--text);">Y seconds</strong>.
+      </p>
+      <form action="/save_settings" method="POST">
+        {% set s = settings %}
+        {% for t in range(1, 6) %}
+          <input type="hidden" name="tier{{ t }}_strikes" value="{{ s['tier' ~ t ~ '_strikes'] }}" />
+          <input type="hidden" name="tier{{ t }}_minutes" value="{{ s['tier' ~ t ~ '_minutes'] }}" />
+        {% endfor %}
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;">
+          <div>
+            <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Times before action</label>
+            <input class="form-input" type="number" name="spam_word_limit" min="2" value="{{ s.spam_word_limit }}" />
+          </div>
+          <div>
+            <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Time window (seconds)</label>
+            <input class="form-input" type="number" name="spam_word_window" min="1" value="{{ s.spam_word_window }}" />
+          </div>
+          <div>
+            <label style="font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:0.3rem;">Mute tier to apply</label>
+            <select name="spam_word_tier" class="form-input">
+              {% for t in range(1, 6) %}
+              <option value="{{ t }}" {% if s.spam_word_tier == t %}selected{% endif %}>Tier {{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:1rem;">
+          <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -522,8 +561,19 @@
     });
   });
 
-  // Auto-refresh every 30 seconds
-  setTimeout(() => location.reload(), 30000);
+  // Silently update stat numbers every 60 seconds (no full page reload)
+  function refreshStats() {
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('stat-strikes').textContent = d.total_strikes;
+        document.getElementById('stat-users').textContent   = d.total_users_striked;
+        document.getElementById('stat-logs').textContent    = d.total_logs;
+        document.getElementById('stat-words').textContent   = d.total_banned_words;
+      })
+      .catch(() => {});
+  }
+  setInterval(refreshStats, 60000);
 </script>
 </body>
 </html>

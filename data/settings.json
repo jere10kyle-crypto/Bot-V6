@@ -1,7 +1,12 @@
 {
   "tier1_strikes": 1,
   "tier1_minutes": 1,
-  "tier2_strikes": 3,
-  "tier2_minutes": 10,
-  "tier3_strikes": 5
+  "tier2_strikes": 2,
+  "tier2_minutes": 3,
+  "tier3_strikes": 1,
+  "tier3_minutes": 5,
+  "tier4_strikes": 4,
+  "tier4_minutes": 1440,
+  "tier5_strikes": 5,
+  "tier5_minutes": 40320
 }
