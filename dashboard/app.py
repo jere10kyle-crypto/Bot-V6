@@ -6,6 +6,14 @@ from collections import Counter
 app = Flask(__name__)
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
+DEFAULT_SETTINGS = {
+    "tier1_strikes": 1,
+    "tier1_minutes": 15,
+    "tier2_strikes": 3,
+    "tier2_minutes": 1440,
+    "tier3_strikes": 5,
+}
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def load(f, default):
     path = os.path.join(DATA_DIR, f)
@@ -40,6 +48,8 @@ def index():
     # Strikes distribution for bar chart
     distribution = Counter(strikes.values())
 
+    settings = load("settings.json", DEFAULT_SETTINGS.copy())
+
     return render_template(
         "index.html",
         strikes=strikes,
@@ -51,6 +61,7 @@ def index():
         total_strikes=sum(strikes.values()),
         total_logs=len(logs),
         total_words=len(banned_words),
+        settings=settings,
     )
 
 @app.route("/add_word", methods=["POST"])
@@ -89,6 +100,20 @@ def api_stats():
         "total_logs": len(logs),
         "total_banned_words": len(words),
     })
+
+@app.route("/save_settings", methods=["POST"])
+def save_settings():
+    s = load("settings.json", DEFAULT_SETTINGS.copy())
+    try:
+        s["tier1_strikes"] = max(1, int(request.form.get("tier1_strikes", 1)))
+        s["tier1_minutes"] = max(1, int(request.form.get("tier1_minutes", 15)))
+        s["tier2_strikes"] = max(1, int(request.form.get("tier2_strikes", 3)))
+        s["tier2_minutes"] = max(1, int(request.form.get("tier2_minutes", 1440)))
+        s["tier3_strikes"] = max(1, int(request.form.get("tier3_strikes", 5)))
+    except ValueError:
+        pass
+    save("settings.json", s)
+    return redirect(url_for("index") + "#settings")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

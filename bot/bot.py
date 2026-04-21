@@ -60,6 +60,17 @@ def add_log(action, user, reason, moderator="AutoMod"):
         logs.pop(0)
     save_json("logs.json", logs)
 
+DEFAULT_SETTINGS = {
+    "tier1_strikes": 1,
+    "tier1_minutes": 15,
+    "tier2_strikes": 3,
+    "tier2_minutes": 1440,
+    "tier3_strikes": 5,
+}
+
+def get_settings():
+    return load_json("settings.json", DEFAULT_SETTINGS)
+
 # ── Strike helper ─────────────────────────────────────────────────────────────
 async def add_strike(guild, member, reason):
     uid = str(member.id)
@@ -68,23 +79,26 @@ async def add_strike(guild, member, reason):
     add_log("STRIKE", member, reason)
 
     count = strikes[uid]
-    if count >= 5:
-        # Permanent mute (longest timeout Discord allows per call: 28 days)
+    s = get_settings()
+
+    if count >= s["tier3_strikes"]:
         try:
-            await member.timeout(timedelta(days=28), reason="5 strikes – permanent mute")
-            add_log("PERM_MUTE", member, "Reached 5 strikes")
+            await member.timeout(timedelta(days=28), reason=f"{s['tier3_strikes']} strikes – permanent mute")
+            add_log("PERM_MUTE", member, f"Reached {s['tier3_strikes']} strikes")
         except discord.Forbidden:
             pass
-    elif count >= 3:
+    elif count >= s["tier2_strikes"]:
+        mins = s["tier2_minutes"]
         try:
-            await member.timeout(timedelta(hours=24), reason="3 strikes – 24h mute")
-            add_log("MUTE_24H", member, "Reached 3 strikes")
+            await member.timeout(timedelta(minutes=mins), reason=f"{s['tier2_strikes']} strikes – {mins}m mute")
+            add_log("MUTE_24H", member, f"Reached {s['tier2_strikes']} strikes ({mins}m)")
         except discord.Forbidden:
             pass
-    else:
+    elif count >= s["tier1_strikes"]:
+        mins = s["tier1_minutes"]
         try:
-            await member.timeout(timedelta(minutes=15), reason=f"Strike {count} – 15 min mute")
-            add_log("MUTE_15M", member, f"Strike {count}")
+            await member.timeout(timedelta(minutes=mins), reason=f"Strike {count} – {mins}m mute")
+            add_log("MUTE_15M", member, f"Strike {count} ({mins}m)")
         except discord.Forbidden:
             pass
 
