@@ -139,7 +139,7 @@ async def check_word_spam(message):
     now    = time.time()
 
     for word in message.content.lower().split():
-        if len(word) < 2:
+        if len(word) < 1:
             continue
         times = word_repeat_times[uid][word]
         times = [t for t in times if now - t < window]

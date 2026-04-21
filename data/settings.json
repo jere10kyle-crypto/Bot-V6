@@ -2,11 +2,14 @@
   "tier1_strikes": 1,
   "tier1_minutes": 1,
   "tier2_strikes": 2,
-  "tier2_minutes": 3,
-  "tier3_strikes": 1,
+  "tier2_minutes": 2,
+  "tier3_strikes": 3,
   "tier3_minutes": 5,
   "tier4_strikes": 4,
-  "tier4_minutes": 1440,
+  "tier4_minutes": 9,
   "tier5_strikes": 5,
-  "tier5_minutes": 40320
+  "tier5_minutes": 20,
+  "spam_word_limit": 2,
+  "spam_word_window": 10,
+  "spam_word_tier": 5
 }

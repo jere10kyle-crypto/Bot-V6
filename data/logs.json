@@ -19,5 +19,159 @@
     "user": "jer10kyle",
     "reason": "Spam detection",
     "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:00:11.652366",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Spam detection",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:02:07.004428",
+    "action": "WARN",
+    "user": "fishy_josh",
+    "reason": "Tier 1 banned word warning: 'gay'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:04:43.604459",
+    "action": "WARN",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word warning: 'gay'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:05:06.346925",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word: 'gay'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:05:25.175306",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word: 'gay'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:06:43.101366",
+    "action": "WARN",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word warning: '67'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:06:48.098915",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word: '67'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:06:50.117713",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word: '67'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:06:53.881323",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word: '67'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:08:15.345158",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Spam detection",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:08:58.580396",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'he'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:03.317239",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'je'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:07.269563",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'je'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:12.938936",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'ej'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:13.758250",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'je'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:25.111865",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'hj'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:27.838731",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'hj'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:28.842433",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'hj'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:30.249914",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'hj'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:31.655470",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'hj'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:09:32.898952",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'hj'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:10:20.435427",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word: '67'",
+    "moderator": "AutoMod"
   }
 ]
