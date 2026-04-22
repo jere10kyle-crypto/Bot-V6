@@ -310,10 +310,40 @@
   <a class="nav-item" href="#logs"><span class="icon">📋</span> Logs</a>
   <a class="nav-item" href="#settings"><span class="icon">⚙️</span> Settings</a>
   <a class="nav-item" href="#spam-settings"><span class="icon">🔁</span> Word Spam</a>
+  {% if is_admin %}
+  <a class="nav-item" href="{{ url_for('users_page') }}"><span class="icon">👥</span> Manage Users</a>
+  {% endif %}
+  <div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);font-size:0.8rem;">
+    <div style="color:var(--muted);margin-bottom:0.4rem;">Signed in as</div>
+    <div style="color:var(--text);font-weight:600;display:flex;align-items:center;gap:0.4rem;">
+      {{ current_user.username }}
+      {% if is_admin %}<span style="font-size:0.6rem;background:rgba(235,69,158,0.2);color:var(--accent2);padding:0.1rem 0.4rem;border-radius:999px;border:1px solid var(--accent2);">ADMIN</span>
+      {% elif can_edit %}<span style="font-size:0.6rem;background:rgba(87,242,135,0.2);color:var(--green);padding:0.1rem 0.4rem;border-radius:999px;border:1px solid var(--green);">EDITOR</span>
+      {% else %}<span style="font-size:0.6rem;background:rgba(114,118,125,0.2);color:var(--muted);padding:0.1rem 0.4rem;border-radius:999px;border:1px solid var(--muted);">VIEW</span>
+      {% endif %}
+    </div>
+    <a href="{{ url_for('logout') }}" style="display:block;margin-top:0.6rem;color:var(--muted);text-decoration:none;font-size:0.78rem;">↪ Sign out</a>
+  </div>
 </nav>
 
 <!-- Main -->
 <main class="main">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div style="padding:0.7rem 1rem;border-radius:8px;margin-bottom:1rem;font-size:0.85rem;
+        {% if cat == 'error' %}background:rgba(237,66,69,0.15);color:var(--red);border:1px solid var(--red);
+        {% else %}background:rgba(87,242,135,0.12);color:var(--green);border:1px solid var(--green);{% endif %}">
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  {% if not can_edit %}
+  <div style="padding:0.7rem 1rem;border-radius:8px;margin-bottom:1rem;font-size:0.85rem;background:rgba(88,101,242,0.12);color:var(--accent);border:1px solid var(--accent);">
+    👀 You're in <strong>view-only</strong> mode. Ask the admin to grant edit access.
+  </div>
+  {% endif %}
 
   <!-- Header -->
   <div class="page-header" id="overview">
@@ -395,8 +425,10 @@
               {% endif %}
             </td>
             <td>
+              {% if can_edit %}
               <a href="/reset_strikes/{{ uid }}" class="btn btn-danger btn-sm"
                  onclick="return confirm('Reset strikes for {{ uid }}?')">Reset</a>
+              {% else %}<span style="color:var(--muted);font-size:0.75rem;">—</span>{% endif %}
             </td>
           </tr>
           {% endfor %}
@@ -413,6 +445,7 @@
   <div class="section" id="words">
     <div class="section-title">🚫 Banned Words</div>
     <div class="card">
+      {% if can_edit %}
       <form class="form-row" action="/add_word" method="POST">
         <input class="form-input" type="text" name="word" placeholder="Add a word..." required />
         <select name="tier" class="form-input" style="flex:0 0 auto;width:110px;">
@@ -424,6 +457,7 @@
         </select>
         <button class="btn btn-primary" type="submit">Add</button>
       </form>
+      {% endif %}
       <div class="word-chips">
         {% if banned_words %}
           {% set tier_chip_colors = ["","tag-blue","tag-yellow","tag-red","tag-pink","tag-red"] %}
@@ -433,7 +467,7 @@
             <span style="width:6px;height:6px;border-radius:50%;background:{{ tier_dot_colors[tier] }};display:inline-block;flex-shrink:0;"></span>
             <span style="color:{{ tier_dot_colors[tier] }};font-size:0.65rem;font-weight:700;">T{{ tier }}</span>
             <span style="color:var(--text);">{{ word }}</span>
-            <a href="/remove_word/{{ word }}" title="Remove" style="color:var(--muted);">✕</a>
+            {% if can_edit %}<a href="/remove_word/{{ word }}" title="Remove" style="color:var(--muted);">✕</a>{% endif %}
           </div>
           {% endfor %}
         {% else %}
@@ -499,9 +533,11 @@
           </div>
           {% endfor %}
 
+          {% if can_edit %}
           <div style="border-top:1px solid var(--border);padding-top:1rem;">
             <button class="btn btn-primary" type="submit">Save Settings</button>
           </div>
+          {% endif %}
         </div>
       </form>
     </div>
@@ -538,9 +574,11 @@
             </select>
           </div>
         </div>
+        {% if can_edit %}
         <div style="margin-top:1rem;">
           <button class="btn btn-primary" type="submit">Save</button>
         </div>
+        {% endif %}
       </form>
     </div>
   </div>
