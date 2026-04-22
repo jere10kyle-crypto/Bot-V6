@@ -341,5 +341,124 @@
     "user": "jer10kyle",
     "reason": "Tier 5 banned word warning: 'niger'",
     "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:23:01.047605",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'h'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:23:06.641347",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 5 banned word: 'niger'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T01:26:42.686831",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Tier 1 banned word: '67'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:03.474421",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'g'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:04.067973",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'g'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:04.192766",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Spam detection",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:04.542546",
+    "action": "STRIKE",
+    "user": "jer10kyle",
+    "reason": "Word-repeat spam: 'g'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:13.802676",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Word-repeat spam: 'l'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:14.674550",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Word-repeat spam: 'l'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:14.791123",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Spam detection",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:15.947014",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Word-repeat spam: 'l'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:16.620651",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Word-repeat spam: 'l'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:22.645907",
+    "action": "MUTE_T1",
+    "user": "tomdabomb0242_53201",
+    "reason": "Word-repeat spam: 'l' x3 in 1s (1m)",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-21T23:59:22.646859",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Word-repeat spam: 'l'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-22T00:01:41.832705",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Tier 5 banned word: 'gay'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-22T00:01:47.089942",
+    "action": "STRIKE",
+    "user": "thebot67be",
+    "reason": "Tier 5 banned word: 'gay'",
+    "moderator": "AutoMod"
+  },
+  {
+    "timestamp": "2026-04-22T00:02:24.587952",
+    "action": "STRIKE",
+    "user": "tomdabomb0242_53201",
+    "reason": "Tier 5 banned word: 'gay'",
+    "moderator": "AutoMod"
   }
 ]
